@@ -277,8 +277,8 @@ function App() {
       <Content style={{ padding: "0 24px", background: "#F5F5F5" }}>
         <Layout style={{ flex: 1 }}>
           <Row gutter={[16, 16]}>
-            {/* <Col xs={24} sm={24} md={24} lg={8} xl={6}> */}
-            <Col xs={24} md={6}>
+            <Col xs={24} sm={24} md={24} lg={8} xl={6}>
+            {/* <Col xs={24} md={6}> */}
               <Sider
                 style={{
                   background: "#F5F5F5",
@@ -313,8 +313,8 @@ function App() {
                 }
               </Sider>
             </Col>
-            {/* <Col xs={24} sm={24} md={24} lg={18} xl={18}> */}
-            <Col xs={24} md={18}>
+            <Col xs={24} sm={24} md={24} lg={18} xl={18}>
+            {/* <Col xs={24} md={18}> */}
               <Content style={{ padding: "16px" }}>
                 <GraphTheory
                   nodeAdded={addNode}
