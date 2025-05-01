@@ -3,5 +3,5 @@ import react from '@vitejs/plugin-react-swc'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/calculate_mst/',  // The base path for your GitHub Pages deployment
+  base: '/calculate-mst/',  // The base path for your GitHub Pages deployment
 });
