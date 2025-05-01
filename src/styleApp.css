@@ -1,0 +1,4 @@
+/* Make drawer close icon white */
+.ant-drawer-close .anticon-close {
+    color: white;
+  }
