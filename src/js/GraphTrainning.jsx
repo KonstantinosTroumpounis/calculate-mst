@@ -8,9 +8,39 @@ function GraphTrainning(props) {
 
   const [finalRandomGraph, setFinalRandonGraph] = useState(false); 
   const [graphNode, setGraphNode] = useState([])
+  const [algorithmStructure, setAlgorithmStructure] = useState([])
+  const [stepAlg, setStepAlg] = useState(0)
+
+  const stepAlgRef = useRef(stepAlg);
+  const structuredAlgRef = useRef([]);
+  const sumWeightRef = useRef(0);
+  const notifiedRef = useRef(false); // Prevent multiple notifications
 
   // TODO: Clean up needed in the end
-  const timeoutRef = useRef(null);  // For React (using hooks)
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    stepAlgRef.current = stepAlg;
+  }, [stepAlg]);
+
+  useEffect(() => {
+    structuredAlgRef.current = algorithmStructure;
+  }, [algorithmStructure]);
+
+  useEffect(() => {
+    if (
+      stepAlg >= algorithmStructure.length &&
+      algorithmStructure.length > 0 &&
+      !notifiedRef.current
+    ) {
+      notification.success({
+        message: `Algorithm finished`,
+        placement: 'top',
+        duration: 5,
+      });
+      notifiedRef.current = true; // mark as notified
+    }
+  }, [stepAlg, algorithmStructure]);
 
   useEffect(() => {
     generateRandomGraph()
@@ -21,85 +51,102 @@ function GraphTrainning(props) {
   }, [props.isGraphCleared]);
 
   useEffect(() => {
-    console.log('the train node is :', props.trainNodeIs)
-    let readySelectedAlgStructure = []
-    let structuredAlg = []
-    let count = 0
-    let sumWeight = 0
-    if (props.trainNodeIs.algo == 'primIsOn') {
+    let structuredAlg = [];
+    notifiedRef.current = false;  // reset notification flag
+    setStepAlg(0); // reset user steps
+  
+    if (props.trainNodeIs.algo === 'primIsOn') {
       const isNodeValid = graphNode.find(
         (node) => node.data.id === props.trainNodeIs.startingNode
       );
-      console.log('isNodeValid :', isNodeValid)
-      if (isNodeValid != undefined) {
-        // Distinguish the starting node
-        const node = props.cy.getElementById(props.trainNodeIs.startingNode);
-        if (node) {
-          node.style({
-            'background-color': 'orange',
-            'border-width': 3,
-            'border-color': 'red',
-            'shadow-blur': 10,
-            'shadow-color': 'orange'
-          });
-        }
-        // Make Prim run
-        readySelectedAlgStructure = props.primAlgorithm(finalRandomGraph, props.trainNodeIs.startingNode)
-
-        // Structure it based on cytospace content
-        structuredAlg = props.makeGraphCytospaceFriendly(readySelectedAlgStructure)
-        console.log('structuredAlg :', structuredAlg.length)
-        console.log('count is :', count)
-        console.log('structuredAlg :', structuredAlg)
-        // Allow user to tap in the edges
-        if (count < structuredAlg.length ) {
-          props.cy.on('tap', 'edge', function(evt) {
-            const edge = evt.target; // Get the clicked edge
-            console.log('Clicked edge ID:', edge.id())
-            // Check if it's a specific edge
-            const normalizedClickedId = normalizeEdgeId(edge.id())
-            const normalizedTargetId = normalizeEdgeId(structuredAlg[count].data.id)
-  
-            if (normalizedClickedId === normalizedTargetId) {
-              // If true then green the edge and increase the count 
-              // console.log('normalizes are :', props.cy.edges().filter(e => console.log('e is :', normalizeEdgeId(e.id())))[0])
-              const matchingEdge = props.cy.edges().filter(e => normalizeEdgeId(e.id()) === normalizedTargetId)[0];
-              if (matchingEdge) {
-                matchingEdge.css({
-                  'line-color': 'green',
-                });
-                sumWeight = sumWeight + structuredAlg[count].data.weight
-                props.addWeightInTraining(sumWeight)
-                count = count + 1
-              }
-              // edge.css({
-              //   'line-color': 'green',
-              // });
-              console.log('count is :', count)
-            } else {
-              edge.css({ 'line-color': 'red' });
-  
-              // Store timeout ID so it can be cleared later if necessary
-              timeoutRef.current = setTimeout(() => {
-                edge.css({ 'line-color': '' });  // Restore original color
-              }, 1000);
-              console.log('wrong line')
-            }
-          });
-        }
-      } else {
+      
+      // Notification when user type node that does not exists
+      if (!isNodeValid) {
         return notification.error({
           message: `Node can't be found`,
           duration: 4,
         });
       }
-
-      // console.log('structure is :', readySelectedAlgStructure)
+  
+      // Color starting node
+      const node = props.cy.getElementById(props.trainNodeIs.startingNode);
+      if (node) {
+        node.style({
+          'background-color': 'orange',
+          'border-width': 3,
+          'border-color': 'red',
+          'shadow-blur': 10,
+          'shadow-color': 'orange',
+        });
+      }
+  
+      const readySelectedAlgStructure = props.primAlgorithm(
+        finalRandomGraph,
+        props.trainNodeIs.startingNode
+      );
+  
+      structuredAlg = props.makeGraphCytospaceFriendly(readySelectedAlgStructure);
+      setAlgorithmStructure(structuredAlg); // Triggers structuredAlgRef update via another useEffect
+      console.log('structuredAlg :', structuredAlg)
+      // Attach listener ONCE
+      props.cy.on('tap', 'edge', handleEdgeTap);
+      return () => {
+        props.cy.removeListener('tap', 'edge', handleEdgeTap);
+      };
     }
-  }, [props.trainNodeIs])
+  }, [props.trainNodeIs]);
+
+
+  const handleEdgeTap = (evt) => {
+    const edge = evt.target;
+    const currentStep = stepAlgRef.current;
+    const structuredAlg = structuredAlgRef.current;
+    console.log('currentStep :', currentStep)
+    console.log('edge is :', edge.id())
+    // Algorithm finished
+    if ((currentStep) >= structuredAlg.length) return;
+  
+    const normalizedClickedId = normalizeEdgeId(edge.id());
+    console.log('normalizedClickedId :', normalizedClickedId)
+    const normalizedTargetId = normalizeEdgeId(structuredAlg[currentStep].data.id);
+    console.log(' algo edge is :', normalizedTargetId)
+  
+    if (normalizedClickedId === normalizedTargetId) {
+      edge.css({ 'line-color': 'green' })
+      sumWeightRef.current += structuredAlg[currentStep].data.weight
+      props.addWeightInTraining(sumWeightRef.current)
+
+      // console.log('Matching edge ID:', matchingEdge.id())
+      // console.log('Matching edge CSS:', matchingEdge.css('line-color'))
+
+      setStepAlg((prev) => prev + 1);
+      // const matchingEdge = props.cy.edges().filter(
+      //   (e) => normalizeEdgeId(e.id()) === normalizedTargetId
+      // )[0];
+
+      // console.log('matchingEdge is :', matchingEdge)
+      // console.log('Edges in Cytoscape:', props.cy.edges());
+      // if (matchingEdge) {
+      //   matchingEdge.css({ 'line-color': 'green' });
+  
+      //   sumWeightRef.current += structuredAlg[currentStep].data.weight;
+      //   props.addWeightInTraining(sumWeightRef.current);
+
+      //   console.log('Matching edge ID:', matchingEdge.id());
+      //   console.log('Matching edge CSS:', matchingEdge.css('line-color'));
+  
+      //   setStepAlg((prev) => prev + 1);
+      // }
+    } else {
+      edge.css({ 'line-color': 'red' });
+      timeoutRef.current = setTimeout(() => {
+        edge.css({ 'line-color': '' });
+      }, 1000);
+      console.log('wrong line');
+    }
+  };
 
   const normalizeEdgeId = (edge) => {
-    // Split the edge into nodes and sort them lexicographically
     return edge.split('-').sort().join('-');
   }
 
