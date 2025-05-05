@@ -63,7 +63,7 @@ function GraphTrainning(props) {
       // Notification when user type node that does not exists
       if (!isNodeValid) {
         return notification.error({
-          message: `Node can't be found`,
+          message: `Vertex can't be found`,
           duration: 4,
         });
       }

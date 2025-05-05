@@ -145,7 +145,7 @@ function GraphTheory(props) {
           setStep(0);
         } else {
           return notification.error({
-            message: `Node can't be found`,
+            message: `Vertex can't be found`,
             duration: 0,
           });
         }

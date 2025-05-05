@@ -70,12 +70,12 @@ function GraphCustomize(props) {
             rules={[
               {
                 required: true,
-                message: "Number of nodes required",
+                message: "Number of vertices required",
               },
             ]}
             labelCol={{ span: 6 }}
           >
-            <Input addonBefore="Number of nodes" placeholder="10 etc" />
+            <Input addonBefore="Number of vertices" placeholder="10 etc" />
           </Form.Item>
           <Form.Item name={"probEdges"} labelCol={{ span: 6 }}>
             <div>
@@ -218,24 +218,24 @@ function GraphCustomize(props) {
             rules={[
               {
                 required: true,
-                message: "Starting point of node required",
+                message: "Starting point of vertex required",
               },
             ]}
             labelCol={{ span: 6 }}
           >
-            <Input addonBefore="From node" placeholder="a etc" />
+            <Input addonBefore="From vertex" placeholder="a etc" />
           </Form.Item>
           <Form.Item
             name={"untilNode"}
             rules={[
               {
                 required: true,
-                message: "Finishing point of node required",
+                message: "Finishing point of vertex required",
               },
             ]}
             labelCol={{ span: 6 }}
           >
-            <Input addonBefore="Until node" placeholder="b etc" />
+            <Input addonBefore="Until vertex" placeholder="b etc" />
           </Form.Item>
           <Form.Item
             name={"weights"}
@@ -324,7 +324,7 @@ function GraphCustomize(props) {
           }}
         >
           <Paragraph style={{ fontSize: breakpoints.xs ? "12px" : "14px" }}>
-            Add nodes and define edges with their respective weights to create
+            Add vertices and define edges with their respective weights to create
             your graph manually.
           </Paragraph>
           <div style={{ display: "flex", gap: "10px" }}>
@@ -334,7 +334,7 @@ function GraphCustomize(props) {
               onClick={() => props.addNodePressed()}
               block={breakpoints.xs}
             >
-              Node
+              Vertex
             </Button>
             <Button
               type="primary"

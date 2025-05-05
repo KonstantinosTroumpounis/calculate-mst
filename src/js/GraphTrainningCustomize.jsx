@@ -52,12 +52,12 @@ function GraphTrainningCustomize(props) {
                         rules={[
                           {
                             required: true,
-                            message: "Starting node required",
+                            message: "Starting vertex required",
                           },
                         ]}
                         labelCol={{ span: 6 }}
                       >
-                        <Input addonBefore="Starting node" placeholder="a etc" />
+                        <Input addonBefore="Starting vertex" placeholder="a etc" />
                       </Form.Item>
                     </Form>
                 }
