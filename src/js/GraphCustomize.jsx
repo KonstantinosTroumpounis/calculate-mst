@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import {
   Button,
   Input,
+  InputNumber,
   Modal,
   Form,
   Slider,
@@ -75,7 +76,7 @@ function GraphCustomize(props) {
             ]}
             labelCol={{ span: 6 }}
           >
-            <Input addonBefore="Number of vertices" placeholder="10 etc" />
+            <InputNumber addonBefore="Number of vertices" placeholder="10 etc" min={2} max={15}/>
           </Form.Item>
           <Form.Item name={"probEdges"} labelCol={{ span: 6 }}>
             <div>
@@ -272,17 +273,6 @@ function GraphCustomize(props) {
         borderRadius: 10,
       }}
     >
-      {/* <Title level={4} style={{ textAlign: "center" }}>Which graph do you want to execute the algorithm on?</Title> */}
-
-      {/* <Paragraph style={{ textAlign: "center", fontSize: "14px", color: "#666" }}>
-                You can either <strong><em>build your own graph</em></strong> by adding nodes and edges, or <strong><em>generate a random graph</em></strong>.  
-                Once you've created a graph, you can apply minimum spanning tree (MST) algorithms.
-            </Paragraph> */}
-
-      {/* <Divider /> */}
-
-      {/* <Title level={5} style={{ textAlign: "center" }}>Build or generate a graph</Title> */}
-
       <div
         style={{
           display: "flex",
@@ -313,7 +303,7 @@ function GraphCustomize(props) {
         </Button>
       </div>
       {randomGraph && generateGraphModal()}
-      {buildGraph && (
+      {(buildGraph) && (
         <Card
           title="Build your own graph"
           variant={false}
@@ -408,7 +398,7 @@ function GraphCustomize(props) {
         <Button
           type="primary"
           style={{ marginRight: "10px" }}
-          onClick={() => props.clearGraph()}
+          onClick={() => (props.clearGraph(), setBuildGraph(false))}
           disabled={!props.finishCustomize == true}
           block={breakpoints.xs}
         >

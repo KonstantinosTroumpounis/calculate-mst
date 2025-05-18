@@ -17,7 +17,12 @@ function GraphTrainningCustomize(props) {
     const submitPrimNode = (values) => {
       setWelcomeModalEnable(false)
       // setSelectedEdge(values.startingNode)
-      props.trainPrimNodeStarter(values, 'primIsOn')
+      props.selectedTrainningAlgo(values, 'primIsOn')
+    }
+
+    const submitKruskalAlg = () => {
+      setWelcomeModalEnable(false)
+      props.selectedTrainningAlgo('dummyNode', 'kruskalIsOn')
     }
 
     const chooseAlgorithModal = () => {
@@ -31,18 +36,21 @@ function GraphTrainningCustomize(props) {
               <Button key='cancel' onClick={() => setWelcomeModalEnable(false)}>
                 Cancel
               </Button>,
-              <Button key='ok' type="primary" onClick={() => form.submit()}>
+              <Button
+                key="ok"
+                type="primary"
+                onClick={() => {
+                  if (trainWithPrim) {
+                    form.submit(); // triggers Form.onFinish
+                  } else if (trainWithKruskal) {
+                    submitKruskalAlg(); // call directly
+                  }
+                }}
+              >
                 Proceed
               </Button>
             ]}
           >
-              {/* {
-                trainWithPrim && 
-                  <div style={{display:'flex', alignItems: 'center', gap: '8px'}}>
-                    <WarningOutlined style={{ color: 'orange', fontSize: '20px' }}/>
-                    <p>Don't forget to click on the starting node</p>
-                  </div>
-              } */}
               <>
                 {
                   trainWithPrim && 
@@ -94,9 +102,9 @@ function GraphTrainningCustomize(props) {
                 >
                     <Button
                         type="primary"
-                        // onClick={() => {
-                        //   props.handleTrainingMode();
-                        // }}
+                        onClick={() => {
+                          (props.regenerateGraph(), form.resetFields())
+                        }}
                         block={breakpoints.xs}
                         // disabled={props.isTrainingModeOn}
                     >
@@ -116,6 +124,7 @@ function GraphTrainningCustomize(props) {
                     <Button
                         type="primary"
                         style={{ marginRight: "10px" }}
+                        // disabled={trainWithPrim==true}
                         onClick={() => {
                             setTrainWithKruskal(true), 
                             setWelcomeModalEnable(true),
@@ -129,11 +138,6 @@ function GraphTrainningCustomize(props) {
                     <Button
                         type="primary"
                         style={{ marginRight: "10px" }}
-                        // style={{
-                        //     marginRight: '10px',
-                        //     backgroundColor: props.runningAlgorithm === 'prim' ? 'orange' : '',
-                        //     color: props.runningAlgorithm === 'prim' ? 'white' : '' // Ensure text is visible
-                        // }}
                         onClick={() => {
                             setTrainWithPrim(true), 
                             setWelcomeModalEnable(true),
@@ -151,13 +155,13 @@ function GraphTrainningCustomize(props) {
                     <Button
                         type="primary"
                         style={{ marginRight: "10px" }}
-                        // onClick={() => props.downloadGraph()}
-                        disabled={props.trainNodeIs.runningAlgo != undefined}
+                        onClick={() => props.downloadGraph()}
+                        disabled={!props.trainAlgoFinished}
                         // block={breakpoints.xs}
                     >
                         Download graph
                     </Button>
-                    <Button
+                    {/* <Button
                         type="primary"
                         style={{ marginRight: "10px" }}
                         // onClick={() => props.clearGraph()}
@@ -165,7 +169,7 @@ function GraphTrainningCustomize(props) {
                         block={breakpoints.xs}
                     >
                         Clear graph
-                    </Button>
+                    </Button> */}
                 </div>
             </Card>
             {

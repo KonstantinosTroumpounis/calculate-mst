@@ -6,7 +6,7 @@ import GraphTrainning from "./GraphTrainning";
 
 function GraphTheory(props) {
   const [cy, setCy] = useState(undefined);
-  const [currentLetter, setCurrentLetter] = useState("a");
+  const [currentLetter, setCurrentLetter] = useState("`");
   const [step, setStep] = useState(0);
   const [saveNodes, setSaveNodes] = useState([{ data: { id: "a" } }]);
   const [saveWeights, setSaveWeights] = useState([]);
@@ -19,14 +19,7 @@ function GraphTheory(props) {
   useEffect(() => {
     // Initialize Cytoscape after component mounts
     const cy = cytoscape({
-      container: document.getElementById("cy"), // container to render in
-      elements: [
-        // list of graph elements to start with
-        {
-          // node a
-          data: { id: "a" },
-        },
-      ],
+      container: document.getElementById("cy"),
       style: [
         // the stylesheet for the graph
         {
@@ -72,24 +65,20 @@ function GraphTheory(props) {
   }, [props.nodeAdded, cy, props.buildOwnGraphPressed]);
 
   useEffect(() => {
-    console.log("props.primStarting :", props.primStarting);
     if (props.primStarting.startingNode !== undefined && cy !== undefined) {
-      console.log("save node is :", saveNodes);
       const found = saveNodes.find(
         (node) => node.data.id === props.primStarting.startingNode
       );
-      console.log("found is :", found);
       if (found != undefined) {
         resetColorGraphAfterChangeStartingPoint();
         clearInnerStates();
         let prim = primAlgorithm(saveWeights, props.primStarting.startingNode);
-        console.log("prim is :", prim);
-        console.log("saveWeights is :", saveWeights);
+        console.log("graph is :", saveWeights);
 
         const elements = makeGraphCytospaceFriendly(prim)
 
         setPrimResults(elements);
-        console.log("elements :", elements);
+        console.log("prim resutls :", elements);
         if (props.primStarting.option === "finalGraph") {
           let sumWeight = elements.reduce(
             (acc, edge) => acc + parseInt(edge.data.weight),
@@ -111,35 +100,6 @@ function GraphTheory(props) {
             duration: 5,
           });
         }
-
-        //TODO: Works if we want to erase the previous graph
-        // cy.elements().remove();
-        // cy.add(saveNodes)
-        // console.log('ton pairneis 1')
-        // cy.add(elements)
-        // console.log('ton pairneis 2')
-        // cy.layout({ name: 'random' }).run();
-
-        // cy.style()
-        // .selector('node')
-        // .style({
-        //     'label': 'data(id)',
-        //     'background-color': '#666',
-        //     'color': '#fff',
-        //     'text-valign': 'center',
-        //     'text-halign': 'center'
-        // })
-        // .selector('edge')
-        // .style({
-        //     'label': 'data(weight)',
-        //     'text-background-color': 'white',
-        //     'text-background-opacity': 1,
-        //     'text-background-padding': '3px',
-        //     'text-valign': 'center',
-        //     'text-halign': 'center'
-        // })
-        // .update();
-        //TODO: Untill here
       } else {
         if (props.primStarting.startingNode == undefined) {
           setStep(0);
@@ -156,7 +116,7 @@ function GraphTheory(props) {
   useEffect(() => {
     resetColorGraphAfterChangeStartingPoint();
     clearInnerStates();
-    let kruskalMst = kruskalAlgorithm();
+    let kruskalMst = kruskalAlgorithm(saveWeights);
 
     const kruskalElements = kruskalMst.map((kruskal) => {
       return {
@@ -169,7 +129,7 @@ function GraphTheory(props) {
       };
     });
 
-    console.log("kruskalElements are :", kruskalElements);
+    console.log("kruskal resutls are :", kruskalElements);
     setKruskalResults(kruskalElements);
     if (props.kruskalConfigurations.option === "finalGraph") {
       let sumWeight = kruskalElements.reduce(
@@ -212,7 +172,7 @@ function GraphTheory(props) {
   }, [props.isGraphDownloaded]);
 
   useEffect(() => {
-    if (props.IsGraphCleared) {
+    if (props.IsGraphCleared > 0) {
       triggerClearGraph();
     }
   }, [props.IsGraphCleared]);
@@ -337,9 +297,15 @@ function GraphTheory(props) {
     props.insertEdgesWeightsPressed();
   };
 
+  const getRandomWeight = (numWeights) => {
+    return (Math.floor(Math.random() * (numWeights[1] - numWeights[0] + 1)) + numWeights[0])
+  }
+
   const generateRandomGraph = (numNodes, numWeights, numEdges) => {
     // Clear existing nodes and edges
     cy.elements().remove();
+
+    const edgeSet = new Set(); // To track unique connections
 
     // Add random nodes
     const randomNodes = [];
@@ -350,33 +316,60 @@ function GraphTheory(props) {
     cy.add(randomNodes);
     setSaveNodes(randomNodes);
 
-    //TODO: Check the probabiity
-    // console.log('check the prob :', numEdges)
     const randomEdges = [];
+
+    for (let i = 1; i < numNodes; i++) {
+      const source = randomNodes[i].data.id
+      const target = randomNodes[Math.floor(Math.random() * i)].data.id;
+
+      const pairKey1 = `${source}-${target}`;
+      const pairKey2 = `${target}-${source}`;
+
+      if (source == target || edgeSet.has(pairKey1) || edgeSet.has(pairKey2)) // avoid self route like b-b
+          continue;
+
+      edgeSet.add(pairKey1); // Save connection
+      // const weight1 = Math.floor(Math.random() * (numWeights[1] - numWeights[0] + 1)) + numWeights[0];
+      randomEdges.push({
+        data: {
+          id: pairKey1,
+          source: source,
+          target: target,
+          weight: getRandomWeight(numWeights),
+        },
+      });
+    }
+
+    console.log('randomEdges are :', randomEdges)
     for (let i = 0; i < numNodes; i++) {
       for (let j = i + 1; j < numNodes; j++) {
         // Connect each node to all other nodes except itself and previous ones
         let ran = Math.random();
-        // console.log('ran is :', ran)
         const sourceNodeId = randomNodes[i].data.id;
         const targetNodeId = randomNodes[j].data.id;
-        const weight =
-          Math.floor(Math.random() * (numWeights[1] - numWeights[0])) +
-          numWeights[0]; // Random weight
-        //TODO: Erase this and find a way to be fair
-        if (ran < numEdges) {
+        
+        const pairKey1 = `${sourceNodeId}-${targetNodeId}`;
+        const pairKey2 = `${targetNodeId}-${sourceNodeId}`;
+
+        if (ran < numEdges &&
+          sourceNodeId !== targetNodeId &&
+          !edgeSet.has(pairKey1) &&
+          !edgeSet.has(pairKey2)) {
+
+          edgeSet.add(pairKey1)
           randomEdges.push({
             data: {
-              id: `${sourceNodeId}-${targetNodeId}`,
+              id: pairKey1,
               source: sourceNodeId,
               target: targetNodeId,
-              weight: weight,
+              weight: getRandomWeight(numWeights),
             },
           });
         }
       }
     }
-    // console.log('randomEdges :', randomEdges)
+
+    console.log('randomEdges :', randomEdges)
     cy.add(randomEdges);
     setSaveWeights(randomEdges);
 
@@ -406,8 +399,8 @@ function GraphTheory(props) {
   };
 
   const primAlgorithm = (edges, startNode) => {
-    //TODO: Bug on build your own grph ----> SOLVED
     //TODO: Make a rework if the node has not edges
+    setSaveTrainningWeights(0)
     // Set of nodes already included in MST
     const mstSet = new Set();
     // Array to store the MST edges
@@ -477,7 +470,6 @@ function GraphTheory(props) {
           ref.data.target === edge.source
         ) {
           reverseExists = true;
-          // console.log("Reverse route found:", ref)
           return true; // Stop iteration
         }
         return false;
@@ -517,13 +509,14 @@ function GraphTheory(props) {
     return false; // Already in the same set
   };
 
-  const kruskalAlgorithm = () => {
+  const kruskalAlgorithm = (weigths) => {
+    setSaveTrainningWeights(0)
     setTotalWeightsAre(0);
     let totalGraphPath = [];
     let mst = [];
     const parent = {};
 
-    totalGraphPath = saveWeights.map((item) => item.data);
+    totalGraphPath = weigths.map((item) => item.data);
     totalGraphPath.sort((a, b) => a.weight - b.weight);
 
     console.log("totalGraphPath :", totalGraphPath);
@@ -547,7 +540,6 @@ function GraphTheory(props) {
   };
 
   const getAlgorithStepByStep = (algorunning) => {
-    console.log("algorunning :", algorunning);
     const selectedAlg =
       props.runningAlgorithm == "prim" ? primResults : kruskalResults;
 
@@ -612,10 +604,6 @@ function GraphTheory(props) {
     link.click();
   };
 
-  // TODO: Erase the colors of the graph after the algorithm finish and the build graph occured
-  // TODO: Make Kruskal undefined after the Prim alg selected.
-  // TODO: Maybe better structure ??
-
   const addWeightInTraining = (weights) => {
     setSaveTrainningWeights(weights)
   }
@@ -632,26 +620,25 @@ function GraphTheory(props) {
         }}
       >
         {/** Show resutls on Traininng mode */}
-        {props.isTrainingModeOn &&
-          props.trainNodeIs &&
-          props.trainNodeIs.algo == "primIsOn" && (
-            <div
-              style={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: "10px",
-                position: "absolute",
-                top: "10px",
-                left: "10px",
-                backgroundColor: "white",
-                padding: "10px",
-                zIndex: 10,
-                borderRadius: "5px",
-                boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
-                maxWidth: "90%",
-                justifyContent: "center",
-              }}
-            >
+        {props.isTrainingModeOn && props.trainNodeIs && (
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "10px",
+              position: "absolute",
+              top: "10px",
+              left: "10px",
+              backgroundColor: "white",
+              padding: "10px",
+              zIndex: 10,
+              borderRadius: "5px",
+              boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+              maxWidth: "90%",
+              justifyContent: "center",
+            }}
+          >
+            {props.trainNodeIs.algo === "primIsOn" && (
               <>
                 <Tag style={{ marginTop: 5 }} color="cyan">
                   Prim's algorithm
@@ -663,8 +650,20 @@ function GraphTheory(props) {
                   Weights: {saveTrainningWeights}
                 </Tag>
               </>
-            </div>
-          )}
+            )}
+
+            {props.trainNodeIs.algo === "kruskalIsOn" && (
+              <>
+                <Tag style={{ marginTop: 5 }} color="cyan">
+                  Kruskal's algorithm
+                </Tag>
+                <Tag style={{ marginTop: 5 }} color="red">
+                  Weights: {saveTrainningWeights}
+                </Tag>
+              </>
+            )}
+          </div>
+        )}
         {/* Algorithm Info Panel for simple execution */}
         {(props.primStarting.option === "stepByStep" ||
           props.primStarting.option === "finalGraph" ||
@@ -788,8 +787,11 @@ function GraphTheory(props) {
           isGraphCleared={props.IsGraphCleared}
           trainNodeIs={props.trainNodeIs}
           primAlgorithm={primAlgorithm}
+          kruskalAlgorithm={kruskalAlgorithm}
           makeGraphCytospaceFriendly={makeGraphCytospaceFriendly}
           addWeightInTraining={addWeightInTraining}
+          regeratorGraph={props.regeratorGraph}
+          trainningAlgoFinished={props.trainningAlgoFinished}
         />
       )}
     </>

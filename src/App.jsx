@@ -21,6 +21,8 @@ function App() {
   const [isGraphDownloaded, setisGraphDownloaded] = useState(false);
   const [IsGraphCleared, setIsGraphCleared] = useState(false)
   const [isTrainingModeOn, setIsTrainingModeOn] = useState(false);
+  const [regeratorGraph, setRegeratorGraph] = useState(0)
+  const [trainAlgoFinished, setTrainAlgoFinished] = useState(false)
   const [runningAlgorithm, setRunningAlgorithm] = useState("");
   const [trainNodeIs, setTrainNodeIs] = useState({
     runningAlgo: undefined,
@@ -49,12 +51,18 @@ function App() {
   const screens = useBreakpoint();
   const isMobile = !screens.md;
 
-  const trainPrimNodeStarter = (data, algo) => {
-    console.log('data are :', data.startingNode)
-    setTrainNodeIs({
-      algo: algo,
-      startingNode: data.startingNode
-    })
+  const selectedTrainningAlgo = (data, algo) => {
+    if (algo == 'kruskalIsOn') {
+      setTrainNodeIs({
+        algo: algo,
+        startingNode: undefined
+      })
+    }else {
+      setTrainNodeIs({
+        algo: algo,
+        startingNode: data.startingNode
+      })
+    }
   }
 
   const addNodePressed = () => {
@@ -123,14 +131,22 @@ function App() {
   };
 
   const clearGraph = () => {
-    setIsGraphCleared(true)
+    setIsGraphCleared(IsGraphCleared + 1)
   }
 
-  // const handleTrainingMode = () => {
-  //   setIsTrainingModeOn(!isTrainingModeOn)
-  //   clearGraph()
-  //   console.log('state is :', isTrainingModeOn)
-  // }
+  const regenerateGraph = () => {
+    // After random graph generation button clicked in trainning mode.
+    setTrainAlgoFinished(false)
+    setRegeratorGraph(regeratorGraph+1)
+    setTrainNodeIs({
+      algo: undefined,
+      startingNode: undefined
+    })
+  }
+
+  const trainningAlgoFinished = () => {
+    setTrainAlgoFinished(true)
+  }
 
   const handleTrainingMode = () => {
     setIsTrainingModeOn(prev => {
@@ -138,7 +154,6 @@ function App() {
         if (!newState) {
             clearGraph()
         }
-        console.log('state will be:', newState);
         return newState;
     });
   };
@@ -240,39 +255,6 @@ function App() {
         ) : (
           headerContent()
         )}
-        {/* <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            flexGrow: 1,
-            justifyContent: "center",
-            gap: "20px",
-            flexWrap: "wrap",
-            color: "white",
-          }}
-        >
-          <InstructionModal />
-          <span style={{ fontWeight: "bold", color: "white" }}>|</span>
-          <h3 
-            onClick={handleTrainingMode} 
-            style={{ cursor: 'pointer' }}
-            onMouseOver={(e) => (e.target.style.color = "orange")}
-            onMouseOut={(e) => {
-              if (!isTrainingModeOn) e.target.style.color = "white";
-            }}
-          >
-            {t('Training')}
-          </h3>
-        </div>
-        <span
-          style={{
-            whiteSpace: "nowrap",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <LanguageSelector />
-        </span> */}
       </Header>
       <Content style={{ padding: "0 24px", background: "#F5F5F5" }}>
         <Layout style={{ flex: 1 }}>
@@ -291,9 +273,12 @@ function App() {
                   isTrainingModeOn == true ? 
                     <GraphTrainningCustomize
                       isTrainingModeOn={isTrainingModeOn}
-                      trainPrimNodeStarter={trainPrimNodeStarter}
+                      selectedTrainningAlgo={selectedTrainningAlgo}
                       trainNodeIs={trainNodeIs}
                       handleTrainingMode={handleTrainingMode}
+                      regenerateGraph={regenerateGraph}
+                      downloadGraph={downloadGraph}
+                      trainAlgoFinished={trainAlgoFinished}
                     />
                   :
                     <GraphCustomize
@@ -308,6 +293,7 @@ function App() {
                       runningAlgorithm={runningAlgorithm}
                       downloadGraph={downloadGraph}
                       clearGraph={clearGraph}
+                      IsGraphCleared={IsGraphCleared}
                       isTrainingModeOn={isTrainingModeOn}
                     />
                 }
@@ -335,6 +321,8 @@ function App() {
                   IsGraphCleared={IsGraphCleared}
                   isTrainingModeOn={isTrainingModeOn}
                   trainNodeIs={trainNodeIs}
+                  regeratorGraph={regeratorGraph}
+                  trainningAlgoFinished={trainningAlgoFinished}
                 />
               </Content>
             </Col>

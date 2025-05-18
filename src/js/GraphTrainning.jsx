@@ -3,6 +3,8 @@ import cytoscape from "cytoscape";
 import { notification } from "antd";
 import { useTranslation } from "react-i18next";
 
+// TODO: Bug on weights in trainning
+// TODO: Block the alg buttons that run the oposite alg
 
 function GraphTrainning(props) {
 
@@ -39,12 +41,13 @@ function GraphTrainning(props) {
         duration: 5,
       });
       notifiedRef.current = true; // mark as notified
+      props.trainningAlgoFinished()
     }
   }, [stepAlg, algorithmStructure]);
 
   useEffect(() => {
     generateRandomGraph()
-  }, []);
+  }, [props.regeratorGraph]);
 
   useEffect(() => {
     props.triggerClearGraph
@@ -54,6 +57,8 @@ function GraphTrainning(props) {
     let structuredAlg = [];
     notifiedRef.current = false;  // reset notification flag
     setStepAlg(0); // reset user steps
+
+    console.log('props.trainNodeIs.algo :', props.trainNodeIs.algo)
   
     if (props.trainNodeIs.algo === 'primIsOn') {
       const isNodeValid = graphNode.find(
@@ -89,6 +94,16 @@ function GraphTrainning(props) {
       setAlgorithmStructure(structuredAlg); // Triggers structuredAlgRef update via another useEffect
       console.log('structuredAlg :', structuredAlg)
       // Attach listener ONCE
+      props.cy.on('tap', 'edge', handleEdgeTap);
+      return () => {
+        props.cy.removeListener('tap', 'edge', handleEdgeTap);
+      };
+    }else if (props.trainNodeIs.algo === 'kruskalIsOn'){
+      console.log('kruskal running')
+      const readySelectedAlgStructure = props.kruskalAlgorithm(finalRandomGraph);
+      structuredAlg = props.makeGraphCytospaceFriendly(readySelectedAlgStructure);
+      setAlgorithmStructure(structuredAlg); // Triggers structuredAlgRef update via another useEffect
+      console.log('structuredAlg :', structuredAlg)
       props.cy.on('tap', 'edge', handleEdgeTap);
       return () => {
         props.cy.removeListener('tap', 'edge', handleEdgeTap);
@@ -159,6 +174,7 @@ function GraphTrainning(props) {
       let min_weight = 1
       let max_weight = 10
       let randomConnectivity = 0.5
+      const edgeSet = new Set();
 
       let numberOfNodes = Math.floor(Math.random() * (max_number - min_number) + min_number);
 
@@ -178,14 +194,18 @@ function GraphTrainning(props) {
           const source = randomNodes[i].data.id
           const target = randomNodes[Math.floor(Math.random() * i)].data.id;
 
-          if (source == target) // avoid self route like b-b
+          const pairKey1 = `${source}-${target}`;
+          const pairKey2 = `${target}-${source}`;
+
+          if (source == target || edgeSet.has(pairKey1) || edgeSet.has(pairKey2))
               continue;
 
+          edgeSet.add(pairKey1);
           const weight = Math.floor(Math.random() * (max_weight - min_weight + 1)) + min_weight;
 
           randomGraph.push({
               data: {
-                id: `${source}-${target}`,
+                id: pairKey1,
                 source: source,
                 target: target,
                 weight: weight,
@@ -200,12 +220,20 @@ function GraphTrainning(props) {
             // console.log('ran is :', ran)
             const sourceNodeId = randomNodes[i].data.id;
             const targetNodeId = randomNodes[j].data.id;
+            const pairKey1 = `${sourceNodeId}-${targetNodeId}`
+            const pairKey2 = `${targetNodeId}-${sourceNodeId}`
+
+
             const weight = Math.floor(Math.random() * (max_weight - min_weight + 1)) + min_weight;
-            //TODO: Erase this and find a way to be fair
-            if (ran < randomConnectivity) {
+
+            if (ran < randomConnectivity && sourceNodeId !== targetNodeId &&
+              !edgeSet.has(pairKey1) &&
+              !edgeSet.has(pairKey2)) {
+
+              edgeSet.add(pairKey1)
               randomGraph.push({
                 data: {
-                  id: `${sourceNodeId}-${targetNodeId}`,
+                  id: pairKey1,
                   source: sourceNodeId,
                   target: targetNodeId,
                   weight: weight,
