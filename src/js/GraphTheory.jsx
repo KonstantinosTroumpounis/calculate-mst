@@ -73,12 +73,10 @@ function GraphTheory(props) {
         resetColorGraphAfterChangeStartingPoint();
         clearInnerStates();
         let prim = primAlgorithm(saveWeights, props.primStarting.startingNode);
-        console.log("graph is :", saveWeights);
 
         const elements = makeGraphCytospaceFriendly(prim)
 
-        setPrimResults(elements);
-        console.log("prim resutls :", elements);
+        setPrimResults(elements)
         if (props.primStarting.option === "finalGraph") {
           let sumWeight = elements.reduce(
             (acc, edge) => acc + parseInt(edge.data.weight),
@@ -129,7 +127,6 @@ function GraphTheory(props) {
       };
     });
 
-    console.log("kruskal resutls are :", kruskalElements);
     setKruskalResults(kruskalElements);
     if (props.kruskalConfigurations.option === "finalGraph") {
       let sumWeight = kruskalElements.reduce(
@@ -340,7 +337,6 @@ function GraphTheory(props) {
       });
     }
 
-    console.log('randomEdges are :', randomEdges)
     for (let i = 0; i < numNodes; i++) {
       for (let j = i + 1; j < numNodes; j++) {
         // Connect each node to all other nodes except itself and previous ones
@@ -369,7 +365,6 @@ function GraphTheory(props) {
       }
     }
 
-    console.log('randomEdges :', randomEdges)
     cy.add(randomEdges);
     setSaveWeights(randomEdges);
 
@@ -518,8 +513,6 @@ function GraphTheory(props) {
 
     totalGraphPath = weigths.map((item) => item.data);
     totalGraphPath.sort((a, b) => a.weight - b.weight);
-
-    console.log("totalGraphPath :", totalGraphPath);
 
     for (const edge of totalGraphPath) {
       const { source, target, weight } = edge;

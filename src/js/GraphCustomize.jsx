@@ -339,13 +339,6 @@ function GraphCustomize(props) {
       )}
       {buildGraphModal && addYourEdgesAndWeights()}
       <Divider />
-
-      {/* <Title level={5} style={{ textAlign: "center" }}>Run MST algorithm</Title> */}
-      {/* <Paragraph style={{ textAlign: "center", fontSize: breakpoints.xs ? "12px" : "14px", color: "#666" }}>
-                After creating a graph, you can apply the <strong><em>Kruskal</em></strong> or
-                <strong style={{marginLeft: 3}}><em>Prim</em></strong> algorithm 
-                to find the minimum spanning tree (MST).
-            </Paragraph> */}
       <div
         style={{
           display: "flex",
@@ -360,7 +353,7 @@ function GraphCustomize(props) {
           type="primary"
           style={{ marginRight: "10px" }}
           onClick={() => setShowKruskal(true)}
-          disabled={!props.finishCustomize == true}
+          disabled={(!props.finishCustomize == true) || (props.runningAlgorithm=='prim' && !props.isAlgorithmFinished)}
           block={breakpoints.xs}
         >
           Kruskal's
@@ -374,7 +367,7 @@ function GraphCustomize(props) {
           //     color: props.runningAlgorithm === 'prim' ? 'white' : '' // Ensure text is visible
           // }}
           onClick={() => setShowPrim(true)}
-          disabled={!props.finishCustomize == true}
+          disabled={(!props.finishCustomize == true) || (props.runningAlgorithm=='kruskal' && !props.isAlgorithmFinished)}
           block={breakpoints.xs}
         >
           Prim's
