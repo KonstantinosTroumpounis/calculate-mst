@@ -12,6 +12,7 @@ import {
   Divider,
   Grid,
 } from "antd";
+import { useTranslation } from "react-i18next";
 
 function GraphCustomize(props) {
   const [randomGraph, setRandonGraph] = useState(false);
@@ -24,6 +25,8 @@ function GraphCustomize(props) {
 
   const { Title, Paragraph } = Typography;
   const { useBreakpoint } = Grid;
+
+  const { t } = useTranslation()
 
   const breakpoints = useBreakpoint(); // Get current screen size
 
@@ -60,7 +63,7 @@ function GraphCustomize(props) {
   const generateGraphModal = () => {
     return (
       <Modal
-        title="Customize your graph"
+        title={t("GraphCustomize.CustomizeYourGraph")}
         open={randomGraph}
         onCancel={() => setRandonGraph(false)}
         footer={[]}
@@ -71,16 +74,16 @@ function GraphCustomize(props) {
             rules={[
               {
                 required: true,
-                message: "Number of vertices required",
+                message: t("GraphCustomize.NumberOfVerticesReq"),
               },
             ]}
             labelCol={{ span: 6 }}
           >
-            <InputNumber addonBefore="Number of vertices" placeholder="10 etc" min={2} max={15}/>
+            <InputNumber addonBefore={t("GraphCustomize.NumberOfVertices")} placeholder="10 etc" min={2} max={15}/>
           </Form.Item>
           <Form.Item name={"probEdges"} labelCol={{ span: 6 }}>
             <div>
-              <p>Probability of edges</p>
+              <p>{t("GraphCustomize.ProbabilityOfEdges")}</p>
               <Slider
                 marks={{
                   0: "0",
@@ -100,7 +103,7 @@ function GraphCustomize(props) {
           </Form.Item>
           <Form.Item name={"range"} labelCol={{ span: 6 }}>
             <div>
-              <p>Range of weights</p>
+              <p>{t("GraphCustomize.RangeOfEeights")}</p>
               <Slider
                 range
                 step={1}
@@ -114,7 +117,7 @@ function GraphCustomize(props) {
             </div>
           </Form.Item>
           <Button type="primary" htmlType="submit" size="middle">
-            Submit
+            {t("Submit")}
           </Button>
         </Form>
       </Modal>
@@ -124,7 +127,7 @@ function GraphCustomize(props) {
   const primOnSteroids = () => {
     return (
       <Modal
-        title="Customize Prim algorithm"
+        title={t("GraphCustomize.CustomizePrimAlgorithm")}
         open={showPrim}
         onCancel={() => setShowPrim(false)}
         footer={[]}
@@ -140,7 +143,7 @@ function GraphCustomize(props) {
             ]}
             labelCol={{ span: 6 }}
           >
-            <Input addonBefore="Starting point" placeholder="a" />
+            <Input addonBefore={t("StartingPoint")} placeholder="a" />
           </Form.Item>
           <Form.Item
             name={"primCustomize"}
@@ -154,15 +157,15 @@ function GraphCustomize(props) {
           >
             <Radio.Group
               options={[
-                { label: "Final Graph", value: "finalGraph" },
-                { label: "Step by Step", value: "stepByStep" },
+                { label: t("FinalGraph"), value: "finalGraph" },
+                { label: t("StepByStep"), value: "stepByStep" },
               ]}
               // onChange={onChange1}
               // value={value1}
             />
           </Form.Item>
           <Button type="primary" htmlType="submit" size="middle">
-            Submit
+            {t("Submit")}
           </Button>
         </Form>
       </Modal>
@@ -172,7 +175,7 @@ function GraphCustomize(props) {
   const kruskalOnSteroids = () => {
     return (
       <Modal
-        title="Customize Kruskal algorithm"
+        title={t("GraphCustomize.CustomizeKruskalAlgorithm")}
         open={showKruskal}
         onCancel={() => setShowKruskal(false)}
         footer={[]}
@@ -190,15 +193,15 @@ function GraphCustomize(props) {
           >
             <Radio.Group
               options={[
-                { label: "Final Graph", value: "finalGraph" },
-                { label: "Step by Step", value: "stepByStep" },
+                { label: t("FinalGraph"), value: "finalGraph" },
+                { label: t("StepByStep"), value: "stepByStep" },
               ]}
               // onChange={onChange1}
               // value={value1}
             />
           </Form.Item>
           <Button type="primary" htmlType="submit" size="middle">
-            Submit
+            {t("Submit")}
           </Button>
         </Form>
       </Modal>
@@ -208,7 +211,7 @@ function GraphCustomize(props) {
   const addYourEdgesAndWeights = () => {
     return (
       <Modal
-        title="Add edges and weight on your graph"
+        title={t("GraphCustomize.AddAdgesAndWeightOnYourGraph")}
         open={buildGraphModal}
         onCancel={() => setBuildGraphModal(false)}
         footer={[]}
@@ -219,39 +222,39 @@ function GraphCustomize(props) {
             rules={[
               {
                 required: true,
-                message: "Starting point of vertex required",
+                message: t("GraphCustomize.StartingPointOfVertexRequired"),
               },
             ]}
             labelCol={{ span: 6 }}
           >
-            <Input addonBefore="From vertex" placeholder="a etc" />
+            <Input addonBefore={t("GraphCustomize.FromVertex")} placeholder="a etc" />
           </Form.Item>
           <Form.Item
             name={"untilNode"}
             rules={[
               {
                 required: true,
-                message: "Finishing point of vertex required",
+                message: t("GraphCustomize.FinishingPointOfVertexRequired"),
               },
             ]}
             labelCol={{ span: 6 }}
           >
-            <Input addonBefore="Until vertex" placeholder="b etc" />
+            <Input addonBefore={t("GraphCustomize.UntilVertex")} placeholder="b etc" />
           </Form.Item>
           <Form.Item
             name={"weights"}
             rules={[
               {
                 required: true,
-                message: "Number of weight required",
+                message: t("GraphCustomize.NumberOfWeightRequired"),
               },
             ]}
             labelCol={{ span: 6 }}
           >
-            <Input addonBefore="Number of weight" placeholder="10 etc" />
+            <Input addonBefore={t("GraphCustomize.NumberOfWeight")} placeholder="10 etc" />
           </Form.Item>
           <Button type="primary" htmlType="submit" size="middle">
-            Submit
+            {t("Submit")}
           </Button>
         </Form>
       </Modal>
@@ -262,7 +265,7 @@ function GraphCustomize(props) {
     <Card
       title={
         <h2 style={{ textAlign: "center", width: "100%" }}>
-          Generate instance
+          {t("GraphCustomize.GenerateInstance")}
         </h2>
       }
       variant="outlined"
@@ -289,7 +292,7 @@ function GraphCustomize(props) {
           block={breakpoints.xs}
           disabled={props.isTrainingModeOn}
         >
-          Build graph
+          {t("GraphCustomize.BuildGraph")}
         </Button>
         <Button
           type="primary"
@@ -299,13 +302,13 @@ function GraphCustomize(props) {
           block={breakpoints.xs}
           disabled={props.isTrainingModeOn}
         >
-          Generate graph
+          {t("GraphCustomize.GenerateGraph")}
         </Button>
       </div>
       {randomGraph && generateGraphModal()}
       {(buildGraph) && (
         <Card
-          title="Build your own graph"
+          title={t("GraphCustomize.BuildYourOwnGraph")}
           variant={false}
           style={{
             background: "#f9f9f9",
@@ -314,8 +317,7 @@ function GraphCustomize(props) {
           }}
         >
           <Paragraph style={{ fontSize: breakpoints.xs ? "12px" : "14px" }}>
-            Add vertices and define edges with their respective weights to create
-            your graph manually.
+            {t("GraphCustomize.BuildYourOwnGraphDesc")}
           </Paragraph>
           <div style={{ display: "flex", gap: "10px" }}>
             <Button
@@ -324,7 +326,7 @@ function GraphCustomize(props) {
               onClick={() => props.addNodePressed()}
               block={breakpoints.xs}
             >
-              Vertex
+              {t("GraphCustomize.Vertex")}
             </Button>
             <Button
               type="primary"
@@ -332,7 +334,7 @@ function GraphCustomize(props) {
               onClick={() => setBuildGraphModal(true)}
               block={breakpoints.xs}
             >
-              Edges and weights
+              {t("GraphCustomize.EdgesAndWeights")}
             </Button>
           </div>
         </Card>
@@ -356,7 +358,7 @@ function GraphCustomize(props) {
           disabled={(!props.finishCustomize == true) || (props.runningAlgorithm=='prim' && !props.isAlgorithmFinished)}
           block={breakpoints.xs}
         >
-          Kruskal's
+          {t("Kruskal")}
         </Button>
         <Button
           type="primary"
@@ -370,7 +372,7 @@ function GraphCustomize(props) {
           disabled={(!props.finishCustomize == true) || (props.runningAlgorithm=='kruskal' && !props.isAlgorithmFinished)}
           block={breakpoints.xs}
         >
-          Prim's
+          {t("Prim")}
         </Button>
       </div>
 
@@ -386,7 +388,7 @@ function GraphCustomize(props) {
           disabled={!props.isAlgorithmFinished}
           block={breakpoints.xs}
         >
-          Download graph
+          {t("GraphCustomize.DownloadGraph")}
         </Button>
         <Button
           type="primary"
@@ -395,7 +397,7 @@ function GraphCustomize(props) {
           disabled={!props.finishCustomize == true}
           block={breakpoints.xs}
         >
-          Clear graph
+          {t("GraphCustomize.ClearGraph")}
         </Button>
       </div>
       {showPrim && primOnSteroids()}

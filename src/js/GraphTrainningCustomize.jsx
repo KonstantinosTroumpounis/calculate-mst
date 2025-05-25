@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button, Card, Grid, Divider, Modal, Input, Form } from "antd";
-import { WarningOutlined } from "@ant-design/icons";
-
+import { useTranslation } from "react-i18next";
 
 
 function GraphTrainningCustomize(props) {
@@ -13,6 +12,8 @@ function GraphTrainningCustomize(props) {
     const { useBreakpoint } = Grid;
     const breakpoints = useBreakpoint();
     const [form] = Form.useForm();
+
+    const { t } = useTranslation()
 
     const submitPrimNode = (values) => {
       setWelcomeModalEnable(false)
@@ -28,13 +29,13 @@ function GraphTrainningCustomize(props) {
     const chooseAlgorithModal = () => {
         return (
           <Modal
-            title={trainWithKruskal ? `Train on Kruskal's algorithm ?` : `Train on Prim's algorithm ?`}
+            title={trainWithKruskal ? t("Trainning.TrainOnKruskalAlgorithm") : t("Trainning.TrainΟnPrimΑlgorithm")} 
             open={welcomeModalEnable} 
             // onOk={handleOk} 
             onCancel={() => setWelcomeModalEnable(false)}
             footer={[    
               <Button key='cancel' onClick={() => setWelcomeModalEnable(false)}>
-                Cancel
+                {t("Trainning.Cancel")}
               </Button>,
               <Button
                 key="ok"
@@ -47,7 +48,7 @@ function GraphTrainningCustomize(props) {
                   }
                 }}
               >
-                Proceed
+                {t("Trainning.Proceed")}
               </Button>
             ]}
           >
@@ -60,12 +61,12 @@ function GraphTrainningCustomize(props) {
                         rules={[
                           {
                             required: true,
-                            message: "Starting vertex required",
+                            message: t("Trainning.StartingVertexRequired"),
                           },
                         ]}
                         labelCol={{ span: 6 }}
                       >
-                        <Input addonBefore="Starting vertex" placeholder="a etc" />
+                        <Input addonBefore={t("StartingVertex")} placeholder={t("Trainning.aEtc")} />
                       </Form.Item>
                     </Form>
                 }
@@ -79,7 +80,7 @@ function GraphTrainningCustomize(props) {
             <Card
                 title={
                     <h2 style={{ textAlign: "center", width: "100%" }}>
-                        Trainning mode
+                        {t("Trainning.TrainningMode")}
                     </h2>
                 }
                 variant="outlined"
@@ -108,7 +109,7 @@ function GraphTrainningCustomize(props) {
                         block={breakpoints.xs}
                         // disabled={props.isTrainingModeOn}
                     >
-                        Regenerate random graph
+                        {t("Trainning.RegenerateRandomGraph")}
                     </Button>
                 </div>
 
@@ -133,7 +134,7 @@ function GraphTrainningCustomize(props) {
                         // disabled={!props.finishCustomize == true}
                         block={breakpoints.xs}
                     >
-                        Kruskal's
+                        {t("Kruskal")}
                     </Button>
                     <Button
                         type="primary"
@@ -146,7 +147,7 @@ function GraphTrainningCustomize(props) {
                         // disabled={!props.finishCustomize == true}
                         block={breakpoints.xs}
                     >
-                        Prim's
+                        {t("Prim")}
                     </Button>
                 </div>
                 <Divider/>
@@ -159,7 +160,7 @@ function GraphTrainningCustomize(props) {
                         disabled={!props.trainAlgoFinished}
                         // block={breakpoints.xs}
                     >
-                        Download graph
+                        {t("GraphCustomize.DownloadGraph")}
                     </Button>
                     {/* <Button
                         type="primary"

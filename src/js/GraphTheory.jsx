@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import cytoscape from "cytoscape";
 import { Button, notification, Tag, Segmented } from "antd";
 import { StepForwardOutlined, DownloadOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 import GraphTrainning from "./GraphTrainning";
 
 function GraphTheory(props) {
@@ -15,6 +16,8 @@ function GraphTheory(props) {
   const [totalWeigthsAre, setTotalWeightsAre] = useState(0);
   const [graphView, setGraphView] = useState(0);
   const [saveTrainningWeights, setSaveTrainningWeights] = useState(0)
+
+  const { t } = useTranslation()
 
   useEffect(() => {
     // Initialize Cytoscape after component mounts
@@ -93,7 +96,7 @@ function GraphTheory(props) {
           setGraphView(0);
           props.algorithmFinished();
           return notification.success({
-            message: `Prim algorithm finished`,
+            message: `Prim ${t("GraphTheory.algorithmFinished")}`,
             placement: "top",
             duration: 5,
           });
@@ -145,7 +148,7 @@ function GraphTheory(props) {
       props.algorithmFinished();
       setGraphView(0);
       return notification.success({
-        message: `Kruskal algorithm finished`,
+        message: `Kruskal ${t("GraphTheory.algorithmFinished")}`,
         placement: "top",
         duration: 5,
       });
@@ -184,7 +187,7 @@ function GraphTheory(props) {
       props.algorithmFinished();
       setGraphView(0);
       notification.success({
-        message: `${algorithmName} algorithm finished`,
+        message: `${algorithmName} ${t("GraphTheory.algorithmFinished")}`,
         placement: "top",
         duration: 5,
       });
@@ -578,7 +581,7 @@ function GraphTheory(props) {
   };
 
   const toggleInitCompletedGraph = (value) => {
-    setGraphView(value === "Initial graph" ? 1 : 0);
+    setGraphView(value === t("GraphTheory.InitialGraph") ? 1 : 0);
   };
 
   const triggerClearGraph = () => {
@@ -634,13 +637,13 @@ function GraphTheory(props) {
             {props.trainNodeIs.algo === "primIsOn" && (
               <>
                 <Tag style={{ marginTop: 5 }} color="cyan">
-                  Prim's algorithm
+                  {t("GraphTheory.PrimAlgorithm")}
                 </Tag>
                 <Tag style={{ marginTop: 5 }} color="green">
-                  Source: {props.trainNodeIs.startingNode}
+                  {t("GraphTheory.Source")}: {props.trainNodeIs.startingNode}
                 </Tag>
                 <Tag style={{ marginTop: 5 }} color="red">
-                  Weights: {saveTrainningWeights}
+                  {t("GraphTheory.Weights")}: {saveTrainningWeights}
                 </Tag>
               </>
             )}
@@ -648,10 +651,10 @@ function GraphTheory(props) {
             {props.trainNodeIs.algo === "kruskalIsOn" && (
               <>
                 <Tag style={{ marginTop: 5 }} color="cyan">
-                  Kruskal's algorithm
+                  {t("GraphTheory.KruskalAlgorithm")}
                 </Tag>
                 <Tag style={{ marginTop: 5 }} color="red">
-                  Weights: {saveTrainningWeights}
+                  {t("GraphTheory.Weights")}: {saveTrainningWeights}
                 </Tag>
               </>
             )}
@@ -682,33 +685,33 @@ function GraphTheory(props) {
             {props.runningAlgorithm == "prim" && (
               <>
                 <Tag style={{ marginTop: 5 }} color="cyan">
-                  Prim's algorithm
+                  {t("GraphTheory.PrimAlgorithm")}
                 </Tag>
                 <Tag style={{ marginTop: 5 }} color="green">
-                  Source: {props.primStarting.startingNode}
+                  {t("GraphTheory.Source")}: {props.primStarting.startingNode}
                 </Tag>
                 <Tag style={{ marginTop: 5 }} color="red">
-                  Weights: {totalWeigthsAre}
+                  {t("GraphTheory.Weights")}: {totalWeigthsAre}
                 </Tag>
                 <Tag style={{ marginTop: 5 }} color="orange">
                   {props.primStarting.option === "stepByStep"
-                    ? "Step by step execution"
-                    : "Final execution"}
+                    ? t("GraphTheory.StepByStepExecution")
+                    : t("GraphTheory.FinalExecution")}
                 </Tag>
               </>
             )}
             {props.runningAlgorithm == "kruskal" && (
               <>
                 <Tag style={{ marginTop: 5 }} color="cyan">
-                  Kruskal's algorithm
+                  {t("GraphTheory.KruskalAlgorithm")}
                 </Tag>
                 <Tag style={{ marginTop: 5 }} color="red">
-                  Weights: {totalWeigthsAre}
+                  {t("GraphTheory.Weights")}: {totalWeigthsAre}
                 </Tag>
                 <Tag style={{ marginTop: 5 }} color="orange">
                   {props.kruskalConfigurations.option === "stepByStep"
-                    ? "Step by step execution"
-                    : "Final execution"}
+                    ? t("GraphTheory.StepByStepExecution")
+                    : t("GraphTheory.FinalExecution")}
                 </Tag>
               </>
             )}
@@ -730,8 +733,8 @@ function GraphTheory(props) {
             }}
           >
             <Segmented
-              options={["Initial graph", "Computed MST"]}
-              value={graphView == 0 ? "Computed MST" : "Initial graph"}
+              options={[t("GraphTheory.InitialGraph"), t("GraphTheory.ComputedMST")]}
+              value={graphView == 0 ? t("GraphTheory.ComputedMST") : t("GraphTheory.InitialGraph")}
               onChange={toggleInitCompletedGraph}
             />
           </div>

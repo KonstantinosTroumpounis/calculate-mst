@@ -34,7 +34,7 @@ function InstructionModal() {
               paddingBottom: "10px",
             }}
           >
-            How to Use
+            {t('HowToUse')}
           </div>
         }
         open={isModalVisible}
@@ -52,21 +52,17 @@ function InstructionModal() {
         closable={true}
       >
         <p>
-          <strong>MST Calculator</strong> is an online application for computing Minimum Spanning
-          Trees for graphs either user-built or automatically generated.
+          <strong>{t('MstCalculator')}</strong> {t('Usage.1stLine')}
         </p>
         <p>
-          MSTs are computed by uisng of one of two available algorithms:
-          <strong style={{padding: 3}}>Kruskal's</strong> and <strong>Prim's</strong>.
+          {t('Usage.2ndLine')}
+          <strong style={{padding: 3}}>{t('Kruskal')}</strong> {t('Usage.3rdLine')} <strong>{t('Prim')}</strong>.
         </p>
         <p>
-          Computed MSTs can either appear after the termination of the selected
-          algorithm or be observed as they are gradually created. In both cases,
-          computed MSTs can be downloaded as png files.
+          {t('Usage.4thLine')}
         </p>
         <p>
-          Training enables users to practice on applying Prim's or Kruskal.s
-          algorithm for computing MST for app-generated graphs.
+        {t('Usage.5thLine')}
         </p>
       </Modal>
     </>

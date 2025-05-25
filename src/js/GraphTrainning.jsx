@@ -21,6 +21,8 @@ function GraphTrainning(props) {
   // TODO: Clean up needed in the end
   const timeoutRef = useRef(null);
 
+  const { t } = useTranslation()
+
   useEffect(() => {
     stepAlgRef.current = stepAlg;
   }, [stepAlg]);
@@ -36,7 +38,7 @@ function GraphTrainning(props) {
       !notifiedRef.current
     ) {
       notification.success({
-        message: `Algorithm finished`,
+        message: t("Trainning.AlgorithmFinished"),
         placement: 'top',
         duration: 5,
       });
@@ -66,7 +68,7 @@ function GraphTrainning(props) {
       // Notification when user type node that does not exists
       if (!isNodeValid) {
         return notification.error({
-          message: `Vertex can't be found`,
+          message: t("Trainning.VertexNotFound"),
           duration: 4,
         });
       }
