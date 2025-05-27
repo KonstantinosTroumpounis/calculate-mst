@@ -110,7 +110,7 @@ function App() {
 
   const cleanAlgorithmStatesAfterTerminate = () => {
     setIsAlgorithmFinished(false);
-    // setisGraphDownloaded(true);
+    setisGraphDownloaded(false);
     setRunningAlgorithm("");
     setStarterPrim({
       startingNode: undefined,
