@@ -96,7 +96,7 @@ function GraphTheory(props) {
           setGraphView(0);
           props.algorithmFinished();
           return notification.success({
-            message: `Prim ${t("GraphTheory.algorithmFinished")}`,
+            message: `${t("GraphTheory.algorithmFinished")}`,
             placement: "top",
             duration: 5,
           });
@@ -148,7 +148,7 @@ function GraphTheory(props) {
       props.algorithmFinished();
       setGraphView(0);
       return notification.success({
-        message: `Kruskal ${t("GraphTheory.algorithmFinished")}`,
+        message: `${t("GraphTheory.algorithmFinished")}`,
         placement: "top",
         duration: 5,
       });
@@ -187,7 +187,7 @@ function GraphTheory(props) {
       props.algorithmFinished();
       setGraphView(0);
       notification.success({
-        message: `${algorithmName} ${t("GraphTheory.algorithmFinished")}`,
+        message: `${t("GraphTheory.algorithmFinished")}`,
         placement: "top",
         duration: 5,
       });
